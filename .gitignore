@@ -29,3 +29,6 @@ dist-ssr
 .claude
 .agents
 skills-lock.json
+
+# Git worktrees (local scratch, not shared)
+.worktrees

@@ -4,11 +4,18 @@ import LocalFireDepartmentRoundedIcon from "@mui/icons-material/LocalFireDepartm
 import { pantalla, fontDisplay, fontMono } from "./pantallaTokens";
 import { formatPrecio } from "../../utils/currency";
 
-function TarjetaPromo({ promo, productos }) {
+function TarjetaPromo({ promo, productos, destacar }) {
   const producto = productos.find((p) => p.id === promo.productoId);
 
   return (
     <Box
+      component={destacar ? motion.div : "div"}
+      animate={
+        destacar
+          ? { boxShadow: [`0 0 0 1px ${pantalla.accentMuted}`, `0 0 0 1px ${pantalla.accent}`, `0 0 0 1px ${pantalla.accentMuted}`] }
+          : undefined
+      }
+      transition={destacar ? { duration: 2.5, repeat: Infinity, ease: "easeInOut" } : undefined}
       sx={{
         display: "flex",
         alignItems: "center",
@@ -54,6 +61,7 @@ export default function PromoRibbon({ promociones, productos }) {
   if (promociones.length === 0) return null;
 
   const necesitaMarquee = promociones.length > 3 && !prefersReducedMotion;
+  const destacar = promociones.length <= 2 && !prefersReducedMotion;
   const items = necesitaMarquee ? [...promociones, ...promociones] : promociones;
 
   return (
@@ -77,7 +85,7 @@ export default function PromoRibbon({ promociones, productos }) {
         sx={{ display: "flex", gap: 2 }}
       >
         {items.map((promo, i) => (
-          <TarjetaPromo key={`${promo.id}-${i}`} promo={promo} productos={productos} />
+          <TarjetaPromo key={`${promo.id}-${i}`} promo={promo} productos={productos} destacar={destacar} />
         ))}
       </Box>
     </Box>

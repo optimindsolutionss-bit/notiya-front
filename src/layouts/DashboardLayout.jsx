@@ -5,6 +5,7 @@ import { alpha } from "@mui/material/styles";
 import logo from "../assets/logo.png";
 import { useAuth } from "../context/AuthContext";
 import { useNegocio } from "../context/NegocioContext";
+import { useRolNegocio } from "../hooks/useRolNegocio";
 import * as negociosApi from "../api/negocios.api";
 import HeaderBar from "./HeaderBar";
 import IconProductos from "~icons/solar/box-minimalistic-linear";
@@ -13,6 +14,7 @@ import IconPlantillas from "~icons/solar/document-text-linear";
 import IconClientes from "~icons/solar/users-group-rounded-linear";
 import IconMensajes from "~icons/solar/chat-round-dots-linear";
 import IconComandos from "~icons/solar/magic-stick-3-linear";
+import IconEquipo from "~icons/solar/users-group-two-rounded-linear";
 import IconAdmin from "~icons/solar/shield-check-linear";
 import IconLogout from "~icons/solar/logout-3-linear";
 import IconChevron from "~icons/carbon/chevron-sort";
@@ -28,6 +30,7 @@ const ICONS = {
   clientes: IconClientes,
   mensajes: IconMensajes,
   comandos: IconComandos,
+  equipo: IconEquipo,
   admin: IconAdmin,
   logout: IconLogout,
   chevron: IconChevron,
@@ -52,6 +55,7 @@ export default function DashboardLayout() {
   const [negocioAjeno, setNegocioAjeno] = useState(null);
 
   const id = Number(negocioId);
+  const rol = useRolNegocio(negocioId);
   const negocioPropio = negocios.find((n) => n.id === id);
   const negocioActual = negocioPropio || negocioAjeno;
 
@@ -63,17 +67,18 @@ export default function DashboardLayout() {
     }
   }, [id, negocioPropio]);
 
-  const navItems = useMemo(
-    () => [
-      { label: "Productos", to: `/app/${id}/productos`, icon: ICONS.productos },
-      { label: "Promociones", to: `/app/${id}/promociones`, icon: ICONS.promociones },
-      { label: "Plantillas", to: `/app/${id}/plantillas`, icon: ICONS.plantillas },
-      { label: "Clientes", to: `/app/${id}/clientes`, icon: ICONS.clientes },
-      { label: "Mensajes", to: `/app/${id}/mensajes`, icon: ICONS.mensajes },
-      { label: "Comandos IA", to: `/app/${id}/comandos`, icon: ICONS.comandos },
-    ],
-    [id]
-  );
+  const navItems = useMemo(() => {
+    const todos = [
+      { label: "Promociones", to: `/app/${id}/promociones`, icon: ICONS.promociones, roles: ["dueño", "editor", "promotor"] },
+      { label: "Productos", to: `/app/${id}/productos`, icon: ICONS.productos, roles: ["dueño", "editor"] },
+      { label: "Plantillas", to: `/app/${id}/plantillas`, icon: ICONS.plantillas, roles: ["dueño", "editor"] },
+      { label: "Clientes", to: `/app/${id}/clientes`, icon: ICONS.clientes, roles: ["dueño", "editor"] },
+      { label: "Mensajes", to: `/app/${id}/mensajes`, icon: ICONS.mensajes, roles: ["dueño", "editor"] },
+      { label: "Comandos IA", to: `/app/${id}/comandos`, icon: ICONS.comandos, roles: ["dueño", "editor"] },
+      { label: "Equipo", to: `/app/${id}/equipo`, icon: ICONS.equipo, roles: ["dueño"] },
+    ];
+    return todos.filter((item) => !rol || item.roles.includes(rol));
+  }, [id, rol]);
 
   const navLinkSx = {
     pl: 2,

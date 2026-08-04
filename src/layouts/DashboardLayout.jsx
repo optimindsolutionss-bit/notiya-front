@@ -18,6 +18,7 @@ import IconEquipo from "~icons/solar/users-group-two-rounded-linear";
 import IconAdmin from "~icons/solar/shield-check-linear";
 import IconUsuarios from "~icons/solar/user-id-linear";
 import IconLogout from "~icons/solar/logout-3-linear";
+import IconVerPantalla from "~icons/solar/tv-linear";
 import IconChevron from "~icons/carbon/chevron-sort";
 
 const DRAWER_WIDTH = 280;
@@ -35,6 +36,7 @@ const ICONS = {
   admin: IconAdmin,
   usuarios: IconUsuarios,
   logout: IconLogout,
+  verPantalla: IconVerPantalla,
   chevron: IconChevron,
 };
 
@@ -194,6 +196,19 @@ export default function DashboardLayout() {
         </Box>
       </Box>
 
+      <Box
+        component="a"
+        href={`/pantalla/${id}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        sx={{ ...navLinkSx, textDecoration: "none" }}
+      >
+        <NavIcon icon={ICONS.verPantalla} />
+        <Box component="span" sx={{ flexGrow: 1 }}>
+          Ver pantalla ↗
+        </Box>
+      </Box>
+
       <Divider sx={{ mb: 1.5 }} />
       <ButtonBase
         disableRipple
@@ -226,7 +241,7 @@ export default function DashboardLayout() {
       )}
 
       <Box sx={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", minHeight: "100vh" }}>
-        <HeaderBar esMovil={esMovil} onMenuClick={() => setMovilAbierto(true)} />
+        <HeaderBar esMovil={esMovil} onMenuClick={() => setMovilAbierto(true)} negocioId={id} />
         <Box component="main" sx={{ flex: 1, bgcolor: "background.default" }}>
           <Outlet />
         </Box>

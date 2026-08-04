@@ -3,6 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import RequireAuth from "./guards/RequireAuth";
 import RequireNegocio from "./guards/RequireNegocio";
 import RequireSuperAdmin from "./guards/RequireSuperAdmin";
+import RequireRolNegocio from "./guards/RequireRolNegocio";
 import DashboardLayout from "../layouts/DashboardLayout";
 import Login from "../pages/Login";
 import Registro from "../pages/Registro";
@@ -16,6 +17,7 @@ import ClientesPage from "../pages/Clientes/ClientesPage";
 import SuscripcionPublica from "../pages/Clientes/SuscripcionPublica";
 import MensajesPage from "../pages/Mensajes/MensajesPage";
 import ComandosIaPage from "../pages/ComandosIa/ComandosIaPage";
+import EquipoPage from "../pages/Equipo/EquipoPage";
 
 function RutaPublicaSoloInvitado({ children }) {
   const { isAuthenticated } = useAuth();
@@ -56,13 +58,18 @@ export default function AppRouter() {
 
         <Route path="/app/:negocioId" element={<RequireNegocio />}>
           <Route element={<DashboardLayout />}>
-            <Route index element={<Navigate to="productos" replace />} />
-            <Route path="productos" element={<ProductosPage />} />
+            <Route index element={<Navigate to="promociones" replace />} />
             <Route path="promociones" element={<PromocionesPage />} />
-            <Route path="plantillas" element={<PlantillasPage />} />
-            <Route path="clientes" element={<ClientesPage />} />
-            <Route path="mensajes" element={<MensajesPage />} />
-            <Route path="comandos" element={<ComandosIaPage />} />
+            <Route element={<RequireRolNegocio roles={["dueño", "editor"]} />}>
+              <Route path="productos" element={<ProductosPage />} />
+              <Route path="plantillas" element={<PlantillasPage />} />
+              <Route path="clientes" element={<ClientesPage />} />
+              <Route path="mensajes" element={<MensajesPage />} />
+              <Route path="comandos" element={<ComandosIaPage />} />
+            </Route>
+            <Route element={<RequireRolNegocio roles={["dueño"]} />}>
+              <Route path="equipo" element={<EquipoPage />} />
+            </Route>
           </Route>
         </Route>
 

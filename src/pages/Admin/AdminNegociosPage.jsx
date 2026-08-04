@@ -19,6 +19,7 @@ import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import * as adminApi from "../../api/admin.api";
+import * as negociosApi from "../../api/negocios.api";
 import AdminCrearNegocioDialog from "./AdminCrearNegocioDialog";
 import { useAuth } from "../../context/AuthContext";
 import PageHeader from "../../components/layout/PageHeader";
@@ -40,6 +41,11 @@ export default function AdminNegociosPage() {
     setNegocios(lista);
     setLoading(false);
   }, []);
+
+  const toggleActivo = async (negocio) => {
+    const actualizado = await negociosApi.actualizar(negocio.id, { activo: !negocio.activo });
+    setNegocios((prev) => prev.map((n) => (n.id === negocio.id ? { ...n, activo: actualizado.activo } : n)));
+  };
 
   useEffect(() => {
     cargar();
@@ -103,7 +109,16 @@ export default function AdminNegociosPage() {
                   </Box>
                   <Stack direction="row" spacing={1}>
                     {negocio.tipoNegocio && <Chip size="small" label={negocio.tipoNegocio} />}
-                    <Chip size="small" label={negocio.activo ? "Activo" : "Inactivo"} color={negocio.activo ? "success" : "default"} variant="outlined" />
+                    <Chip
+                      size="small"
+                      label={negocio.activo ? "Activo" : "Inactivo"}
+                      color={negocio.activo ? "success" : "default"}
+                      variant="outlined"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleActivo(negocio);
+                      }}
+                    />
                   </Stack>
                 </CardContent>
               </CardActionArea>

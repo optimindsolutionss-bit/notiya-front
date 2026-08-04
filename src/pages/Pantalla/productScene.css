@@ -1,0 +1,33 @@
+/*
+ * Deriva ambiental continua de las tarjetas de producto. Se implementa como
+ * @keyframes CSS (no framer-motion) a propósito: corre indefinidamente por
+ * horas en un kiosco/TV, y las animaciones CSS se ejecutan fuera del hilo
+ * principal — no pierden cuadros aunque haya trabajo de JS (fetch/polling)
+ * en simultáneo, a diferencia de un loop animado vía requestAnimationFrame.
+ */
+@keyframes notiya-float {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  33% {
+    transform: translate(var(--amp-x), calc(var(--amp-y) * -0.7)) rotate(var(--amp-rot));
+  }
+  66% {
+    transform: translate(calc(var(--amp-x) * -0.6), calc(var(--amp-y) * 0.5)) rotate(0deg);
+  }
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+}
+
+.notiya-float {
+  animation-name: notiya-float;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notiya-float {
+    animation: none;
+  }
+}

@@ -33,3 +33,13 @@ export async function buscarUsuarioPorCorreo(correo) {
   const { data } = await api.get("/admin/usuarios", { params: { correo } });
   return data.usuarios;
 }
+
+export async function listarUsuarios() {
+  const { data } = await api.get("/admin/usuarios");
+  return data.usuarios.map(snakeToCamelShallow);
+}
+
+export async function actualizarSuperAdmin(usuarioId, esSuperAdmin) {
+  const { data } = await api.patch(`/admin/usuarios/${usuarioId}/superadmin`, { esSuperAdmin });
+  return snakeToCamelShallow(data.usuario);
+}

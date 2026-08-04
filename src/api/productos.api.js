@@ -3,7 +3,7 @@ import { snakeToCamelShallow } from "./caseUtils";
 
 export function normalizeProducto(row) {
   const producto = snakeToCamelShallow(row);
-  return { ...producto, precio: Number(producto.precio) };
+  return { ...producto, precio: producto.precio != null ? Number(producto.precio) : undefined };
 }
 
 export async function listar(negocioId) {

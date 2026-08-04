@@ -43,3 +43,22 @@ export async function crearCompleto({ logoUrl, descripcion, ...datosBase }) {
   }
   return negocio;
 }
+
+export async function listarEmpleados(negocioId) {
+  const { data } = await api.get(`/negocios/${negocioId}/empleados`);
+  return data.empleados.map(snakeToCamelShallow);
+}
+
+export async function agregarEmpleado(negocioId, { correo, rol }) {
+  const { data } = await api.post(`/negocios/${negocioId}/empleados`, { correo, rol });
+  return snakeToCamelShallow(data.acceso);
+}
+
+export async function actualizarRolEmpleado(negocioId, usuarioId, rol) {
+  const { data } = await api.put(`/negocios/${negocioId}/empleados/${usuarioId}`, { rol });
+  return snakeToCamelShallow(data.acceso);
+}
+
+export async function quitarEmpleado(negocioId, usuarioId) {
+  await api.delete(`/negocios/${negocioId}/empleados/${usuarioId}`);
+}

@@ -10,6 +10,7 @@ import Registro from "../pages/Registro";
 import NegociosSelector from "../pages/Negocios/NegociosSelector";
 import ProductosPage from "../pages/Productos/ProductosPage";
 import AdminNegociosPage from "../pages/Admin/AdminNegociosPage";
+import AdminUsuariosPage from "../pages/Admin/AdminUsuariosPage";
 import PantallaPublica from "../pages/Pantalla/PantallaPublica";
 import PromocionesPage from "../pages/Promociones/PromocionesPage";
 import PlantillasPage from "../pages/Plantillas/PlantillasPage";
@@ -75,6 +76,7 @@ export default function AppRouter() {
 
         <Route element={<RequireSuperAdmin />}>
           <Route path="/admin/negocios" element={<AdminNegociosPage />} />
+          <Route path="/admin/usuarios" element={<AdminUsuariosPage />} />
         </Route>
       </Route>
 

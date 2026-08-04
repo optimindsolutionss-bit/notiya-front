@@ -16,6 +16,7 @@ import IconMensajes from "~icons/solar/chat-round-dots-linear";
 import IconComandos from "~icons/solar/magic-stick-3-linear";
 import IconEquipo from "~icons/solar/users-group-two-rounded-linear";
 import IconAdmin from "~icons/solar/shield-check-linear";
+import IconUsuarios from "~icons/solar/user-id-linear";
 import IconLogout from "~icons/solar/logout-3-linear";
 import IconChevron from "~icons/carbon/chevron-sort";
 
@@ -32,6 +33,7 @@ const ICONS = {
   comandos: IconComandos,
   equipo: IconEquipo,
   admin: IconAdmin,
+  usuarios: IconUsuarios,
   logout: IconLogout,
   chevron: IconChevron,
 };
@@ -176,6 +178,14 @@ export default function DashboardLayout() {
                   <NavIcon icon={ICONS.admin} />
                   <Box component="span" sx={{ flexGrow: 1 }}>
                     Todos los negocios
+                  </Box>
+                </Box>
+              </Box>
+              <Box component="li">
+                <Box component={NavLink} to="/admin/usuarios" onClick={() => setMovilAbierto(false)} sx={navLinkSx}>
+                  <NavIcon icon={ICONS.usuarios} />
+                  <Box component="span" sx={{ flexGrow: 1 }}>
+                    Usuarios
                   </Box>
                 </Box>
               </Box>

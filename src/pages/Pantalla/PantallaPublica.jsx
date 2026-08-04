@@ -55,7 +55,7 @@ export default function PantallaPublica() {
         fontFamily: fontDisplay,
       }}
     >
-      <HeroHeader negocio={negocio} />
+      <HeroHeader negocio={negocio} negocioId={negocioId} />
       <PromoRibbon promociones={promociones} productos={productos} />
 
       <Box sx={{ flex: 1 }}>

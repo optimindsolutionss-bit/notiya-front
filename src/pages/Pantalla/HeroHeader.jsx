@@ -1,8 +1,9 @@
 import { Box, Typography, Avatar } from "@mui/material";
 import { motion, useReducedMotion } from "framer-motion";
+import { QRCodeSVG } from "qrcode.react";
 import { pantalla, fontDisplay } from "./pantallaTokens";
 
-export default function HeroHeader({ negocio }) {
+export default function HeroHeader({ negocio, negocioId }) {
   const prefersReducedMotion = useReducedMotion();
 
   return (
@@ -55,16 +56,35 @@ export default function HeroHeader({ negocio }) {
         )}
       </Box>
 
-      <Box sx={{ ml: "auto", display: "flex", alignItems: "center", gap: 1, flexShrink: 0 }}>
-        <Box
-          component={motion.div}
-          animate={prefersReducedMotion ? {} : { opacity: [1, 0.3, 1] }}
-          transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-          sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: pantalla.accent }}
-        />
-        <Typography sx={{ color: pantalla.textMuted, fontSize: "0.8rem", letterSpacing: "0.08em", textTransform: "uppercase" }}>
-          En vivo
-        </Typography>
+      <Box sx={{ ml: "auto", display: "flex", alignItems: "center", gap: 2.5, flexShrink: 0 }}>
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 0.5 }}>
+          <Box sx={{ p: 0.75, borderRadius: 1.5, bgcolor: "#fff", display: "flex", lineHeight: 0 }}>
+            <QRCodeSVG value={`${window.location.origin}/suscribirse/${negocioId}`} size={64} />
+          </Box>
+          <Typography
+            sx={{
+              color: pantalla.textMuted,
+              fontSize: "0.65rem",
+              textAlign: "center",
+              maxWidth: 92,
+              lineHeight: 1.25,
+            }}
+          >
+            Escaneá y recibí promos por WhatsApp
+          </Typography>
+        </Box>
+
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <Box
+            component={motion.div}
+            animate={prefersReducedMotion ? {} : { opacity: [1, 0.3, 1] }}
+            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+            sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: pantalla.accent }}
+          />
+          <Typography sx={{ color: pantalla.textMuted, fontSize: "0.8rem", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+            En vivo
+          </Typography>
+        </Box>
       </Box>
     </Box>
   );

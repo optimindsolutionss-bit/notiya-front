@@ -22,10 +22,16 @@ import PageHeader from "../../components/layout/PageHeader";
 import EmptyState from "../../components/layout/EmptyState";
 import { useStaggerReveal } from "../../hooks/useRevealAnimation";
 import IconTag from "~icons/solar/tag-price-linear";
+import { useAuth } from "../../context/AuthContext";
+import { useRolNegocio } from "../../hooks/useRolNegocio";
 
 export default function PromocionesPage() {
   const { negocioId } = useParams();
   const id = Number(negocioId);
+
+  const { usuario } = useAuth();
+  const rol = useRolNegocio(id);
+  const puedeEditar = (promo) => rol !== "promotor" || promo.creadoPor === usuario?.id;
 
   const [promociones, setPromociones] = useState([]);
   const [productos, setProductos] = useState([]);
@@ -106,12 +112,16 @@ export default function PromocionesPage() {
                     {new Date(promo.fechaInicio).toLocaleString("es-CO")} — {new Date(promo.fechaFin).toLocaleString("es-CO")}
                   </Typography>
                 </Box>
-                <IconButton size="small" onClick={() => setDialog({ open: true, promocion: promo })}>
-                  <EditRoundedIcon fontSize="small" />
-                </IconButton>
-                <IconButton size="small" onClick={() => eliminar(promo)}>
-                  <DeleteRoundedIcon fontSize="small" />
-                </IconButton>
+                {puedeEditar(promo) && (
+                  <>
+                    <IconButton size="small" onClick={() => setDialog({ open: true, promocion: promo })}>
+                      <EditRoundedIcon fontSize="small" />
+                    </IconButton>
+                    <IconButton size="small" onClick={() => eliminar(promo)}>
+                      <DeleteRoundedIcon fontSize="small" />
+                    </IconButton>
+                  </>
+                )}
               </Stack>
             </Card>
           ))}

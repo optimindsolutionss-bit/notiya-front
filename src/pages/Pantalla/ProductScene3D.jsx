@@ -1,11 +1,16 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Box } from "@mui/material";
 import { motion, AnimatePresence, useReducedMotion, useMotionValue, useSpring } from "framer-motion";
 import ProductCard from "./ProductCard";
 import "./productScene.css";
 
-const TIERS = ["media", "cerca", "lejos", "media", "lejos", "cerca"];
+const TIERS = ["cerca", "media", "lejos", "media"];
 const ENTER_EASE = [0.23, 1, 0.32, 1];
+// Solo se renderiza un puñado de tarjetas a la vez (carrusel), nunca las 19+
+// de golpe: así no hace falta recortar ni scrollear nada, cualquiera sea el
+// tamaño del catálogo del negocio.
+const VISIBLE_COUNT = 4;
+const ROTACION_MS = 4200;
 
 // Hash estable (no aleatorio en cada render) para variar duración/retardo por tarjeta.
 function seedFrom(id) {
@@ -13,10 +18,9 @@ function seedFrom(id) {
   return ((n * 9301 + 49297) % 233280) / 233280;
 }
 
-function CardFlotante({ producto, index }) {
-  const profundidad = TIERS[index % TIERS.length];
+function CardFlotante({ producto, tier }) {
   const seed = seedFrom(producto.id);
-  const amplitud = profundidad === "cerca" ? 22 : profundidad === "media" ? 15 : 9;
+  const amplitud = tier === "cerca" ? 16 : tier === "media" ? 11 : 7;
   const duracion = 9 + seed * 7; // 9–16s, distinto por tarjeta para que no se vea sincronizado
   const retardo = seed * 4;
 
@@ -24,7 +28,6 @@ function CardFlotante({ producto, index }) {
     <div
       className="notiya-float"
       style={{
-        zIndex: profundidad === "cerca" ? 3 : profundidad === "media" ? 2 : 1,
         "--amp-x": `${amplitud}px`,
         "--amp-y": `${amplitud}px`,
         "--amp-rot": `${seed > 0.5 ? 1.5 : -1.5}deg`,
@@ -32,9 +35,28 @@ function CardFlotante({ producto, index }) {
         animationDelay: `${retardo}s`,
       }}
     >
-      <ProductCard producto={producto} profundidad={profundidad} />
+      <ProductCard producto={producto} profundidad={tier} />
     </div>
   );
+}
+
+// Ventana rotativa tipo cinta transportadora: cada tick avanza un producto,
+// entra el siguiente de la cola y sale el más viejo — así el ingreso es
+// "producto a producto" en vez de que aparezcan todos de una.
+function useCarrusel(productos) {
+  const [inicio, setInicio] = useState(0);
+  const rota = productos.length > VISIBLE_COUNT;
+
+  useEffect(() => {
+    if (!rota) return;
+    const id = setInterval(() => {
+      setInicio((i) => (i + 1) % productos.length);
+    }, ROTACION_MS);
+    return () => clearInterval(id);
+  }, [rota, productos.length]);
+
+  if (!rota) return productos;
+  return Array.from({ length: VISIBLE_COUNT }, (_, i) => productos[(inicio + i) % productos.length]);
 }
 
 function EscenaAnimada({ productos }) {
@@ -45,6 +67,7 @@ function EscenaAnimada({ productos }) {
   // 1:1, que se sentiría artificial (ver guía de Emil Kowalski sobre mouse-tracking).
   const parallaxX = useSpring(rawX, { stiffness: 60, damping: 14 });
   const parallaxY = useSpring(rawY, { stiffness: 60, damping: 14 });
+  const visibles = useCarrusel(productos);
 
   const handleMouseMove = (e) => {
     if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
@@ -66,27 +89,29 @@ function EscenaAnimada({ productos }) {
       sx={{
         perspective: "1400px",
         px: { xs: 2, md: 5 },
-        py: 4,
-        overflow: "hidden",
+        py: 5,
+        minHeight: 460,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
       }}
     >
       <Box
         component={motion.div}
         style={{ x: parallaxX, y: parallaxY }}
-        sx={{ display: "flex", flexWrap: "wrap", justifyContent: "center", alignContent: "flex-start" }}
+        sx={{ display: "flex", flexWrap: "wrap", justifyContent: "center", alignItems: "center", gap: 5 }}
       >
-        <AnimatePresence>
-          {productos.map((producto, index) => (
+        <AnimatePresence mode="popLayout">
+          {visibles.map((producto, index) => (
             <motion.div
               key={producto.id}
               layout
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.3, ease: ENTER_EASE, delay: Math.min(index * 0.04, 0.6) }}
-              style={{ margin: index % 2 === 0 ? "-10px -18px" : "10px -18px" }}
+              initial={{ opacity: 0, scale: 0.85, x: 80 }}
+              animate={{ opacity: 1, scale: 1, x: 0 }}
+              exit={{ opacity: 0, scale: 0.85, x: -80 }}
+              transition={{ duration: 0.55, ease: ENTER_EASE }}
             >
-              <CardFlotante producto={producto} index={index} />
+              <CardFlotante producto={producto} tier={TIERS[index % TIERS.length]} />
             </motion.div>
           ))}
         </AnimatePresence>
@@ -100,7 +125,7 @@ function EscenaEstatica({ productos }) {
     <Box
       sx={{
         display: "grid",
-        gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+        gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
         gap: 3,
         px: { xs: 3, md: 6 },
         py: 4,

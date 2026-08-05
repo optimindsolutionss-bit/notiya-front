@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   Container,
@@ -6,6 +6,7 @@ import {
   Typography,
   TextField,
   Button,
+  IconButton,
   Card,
   Box,
   Chip,
@@ -15,6 +16,8 @@ import {
 import SendRoundedIcon from "@mui/icons-material/SendRounded";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import MicRoundedIcon from "@mui/icons-material/MicRounded";
+import { motion, useReducedMotion } from "framer-motion";
 import * as comandosIaApi from "../../api/comandosIa.api";
 import PageHeader from "../../components/layout/PageHeader";
 import EmptyState from "../../components/layout/EmptyState";
@@ -32,6 +35,56 @@ export default function ComandosIaPage() {
   const [resultado, setResultado] = useState(null);
   const [error, setError] = useState("");
   const listRef = useStaggerReveal({ translateY: 10, duration: 350, staggerDelay: 50 });
+
+  const prefersReducedMotion = useReducedMotion();
+  const [escuchando, setEscuchando] = useState(false);
+  const [errorVoz, setErrorVoz] = useState("");
+  const recognitionRef = useRef(null);
+  const soportaVoz =
+    typeof window !== "undefined" && ("SpeechRecognition" in window || "webkitSpeechRecognition" in window);
+
+  const iniciarEscucha = () => {
+    setErrorVoz("");
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.lang = "es-CO";
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    recognition.onresult = (event) => {
+      setTexto(event.results[0][0].transcript);
+    };
+
+    recognition.onerror = (event) => {
+      setErrorVoz(
+        event.error === "not-allowed" || event.error === "permission-denied"
+          ? "Permiso de micrófono denegado"
+          : "No se pudo reconocer el audio, intenta de nuevo"
+      );
+    };
+
+    recognition.onend = () => {
+      setEscuchando(false);
+    };
+
+    recognitionRef.current = recognition;
+    recognition.start();
+    setEscuchando(true);
+  };
+
+  const handleMicClick = () => {
+    if (escuchando) {
+      recognitionRef.current?.stop();
+    } else {
+      iniciarEscucha();
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      recognitionRef.current?.stop();
+    };
+  }, []);
 
   const cargar = useCallback(async () => {
     setComandos(await comandosIaApi.listar(id));
@@ -96,6 +149,23 @@ export default function ComandosIaPage() {
               value={texto}
               onChange={(e) => setTexto(e.target.value)}
             />
+            {soportaVoz && (
+              <IconButton
+                onClick={handleMicClick}
+                color={escuchando ? "error" : "default"}
+                aria-label={escuchando ? "Detener grabación" : "Hablar comando"}
+                sx={{ flexShrink: 0, border: "1px solid", borderColor: "divider" }}
+              >
+                <Box
+                  component={motion.div}
+                  animate={escuchando && !prefersReducedMotion ? { opacity: [1, 0.4, 1] } : { opacity: 1 }}
+                  transition={escuchando && !prefersReducedMotion ? { duration: 1.2, repeat: Infinity, ease: "easeInOut" } : {}}
+                  sx={{ display: "flex" }}
+                >
+                  <MicRoundedIcon />
+                </Box>
+              </IconButton>
+            )}
             <Button
               type="submit"
               variant="contained"
@@ -106,11 +176,22 @@ export default function ComandosIaPage() {
               {enviando ? <CircularProgress size={20} sx={{ color: "#fff" }} /> : "Interpretar"}
             </Button>
           </Stack>
+          {escuchando && (
+            <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mt: 1 }}>
+              Escuchando…
+            </Typography>
+          )}
         </form>
 
         {error && (
           <Alert severity="error" sx={{ mt: 2 }}>
             {error}
+          </Alert>
+        )}
+
+        {errorVoz && (
+          <Alert severity="error" sx={{ mt: 2 }}>
+            {errorVoz}
           </Alert>
         )}
 

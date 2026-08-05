@@ -56,6 +56,7 @@ export default function ComandosIaPage() {
     };
 
     recognition.onerror = (event) => {
+      if (event.error === "aborted") return;
       setErrorVoz(
         event.error === "not-allowed" || event.error === "permission-denied"
           ? "Permiso de micrófono denegado"
@@ -68,13 +69,17 @@ export default function ComandosIaPage() {
     };
 
     recognitionRef.current = recognition;
-    recognition.start();
-    setEscuchando(true);
+    try {
+      recognition.start();
+      setEscuchando(true);
+    } catch {
+      setErrorVoz("No se pudo iniciar el micrófono, intenta de nuevo");
+    }
   };
 
   const handleMicClick = () => {
     if (escuchando) {
-      recognitionRef.current?.stop();
+      recognitionRef.current?.abort();
     } else {
       iniciarEscucha();
     }
@@ -82,7 +87,7 @@ export default function ComandosIaPage() {
 
   useEffect(() => {
     return () => {
-      recognitionRef.current?.stop();
+      recognitionRef.current?.abort();
     };
   }, []);
 
@@ -100,6 +105,7 @@ export default function ComandosIaPage() {
     e.preventDefault();
     if (!texto.trim()) return;
     setError("");
+    setErrorVoz("");
     setEnviando(true);
     try {
       const res = await comandosIaApi.crear(id, { textoOriginal: texto.trim() });
@@ -154,7 +160,12 @@ export default function ComandosIaPage() {
                 onClick={handleMicClick}
                 color={escuchando ? "error" : "default"}
                 aria-label={escuchando ? "Detener grabación" : "Hablar comando"}
-                sx={{ flexShrink: 0, border: "1px solid", borderColor: "divider" }}
+                sx={{
+                  flexShrink: 0,
+                  border: "1px solid",
+                  borderColor: "divider",
+                  alignSelf: { xs: "flex-start", sm: "auto" },
+                }}
               >
                 <Box
                   component={motion.div}

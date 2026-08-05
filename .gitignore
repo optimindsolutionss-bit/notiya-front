@@ -32,3 +32,6 @@ skills-lock.json
 
 # Git worktrees (local scratch, not shared)
 .worktrees
+
+# Planes/specs internos (solo local, no se comparten)
+docs

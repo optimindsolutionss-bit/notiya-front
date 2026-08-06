@@ -36,7 +36,7 @@ export default function HeroHeader({ negocio, negocioId }) {
           fontWeight: 800,
         }}
       >
-        {negocio.nome?.[0]?.toUpperCase()}
+        {negocio.nombre?.[0]?.toUpperCase()}
       </Avatar>
 
       <Box sx={{ minWidth: 0 }}>

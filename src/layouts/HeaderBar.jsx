@@ -3,6 +3,10 @@ import { AppBar, Toolbar, IconButton, Typography, Tooltip, Badge, Avatar, Menu, 
 import { alpha } from "@mui/material/styles";
 import logo from "../assets/logo.png";
 import { useAuth } from "../context/AuthContext";
+import { useNegocio } from "../context/NegocioContext";
+import { useRolNegocio } from "../hooks/useRolNegocio";
+import * as negociosApi from "../api/negocios.api";
+import { PALETAS } from "../pages/Pantalla/paletas";
 import IconMenu from "~icons/solar/hamburger-menu-outline";
 import IconSearch from "~icons/solar/magnifer-linear";
 import IconBell from "~icons/solar/bell-linear";
@@ -11,14 +15,32 @@ import IconTv from "~icons/solar/tv-linear";
 
 export default function HeaderBar({ esMovil, onMenuClick, negocioId }) {
   const { usuario, logout } = useAuth();
+  const { negocios, refetchNegocios } = useNegocio();
+  const rol = useRolNegocio(negocioId);
   const [anchorEl, setAnchorEl] = useState(null);
   const [pantallaAnchor, setPantallaAnchor] = useState(null);
   const [copiado, setCopiado] = useState(false);
+  const [paletaCambiada, setPaletaCambiada] = useState(false);
+  const [cambiandoPaleta, setCambiandoPaleta] = useState(false);
   const urlPantalla = `${window.location.origin}/pantalla/${negocioId}`;
+  const negocioActual = negocios.find((n) => n.id === Number(negocioId));
+  const paletaActual = negocioActual?.paletaPantalla || "medianoche";
 
   const copiarLink = async () => {
     await navigator.clipboard.writeText(urlPantalla);
     setCopiado(true);
+  };
+
+  const cambiarPaleta = async (clave) => {
+    if (clave === paletaActual || cambiandoPaleta) return;
+    setCambiandoPaleta(true);
+    try {
+      await negociosApi.actualizar(negocioId, { paletaPantalla: clave });
+      await refetchNegocios();
+      setPaletaCambiada(true);
+    } finally {
+      setCambiandoPaleta(false);
+    }
   };
 
   const iniciales = (usuario?.nombre || usuario?.correo || "?").charAt(0).toUpperCase();
@@ -76,6 +98,35 @@ export default function HeaderBar({ esMovil, onMenuClick, negocioId }) {
                 Abrir
               </Button>
             </Stack>
+            {rol === "dueño" && (
+              <>
+                <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 2, mb: 0.75 }}>
+                  Paleta de colores
+                </Typography>
+                <Stack direction="row" spacing={1}>
+                  {Object.entries(PALETAS).map(([clave, p]) => (
+                    <Box
+                      key={clave}
+                      component="button"
+                      onClick={() => cambiarPaleta(clave)}
+                      disabled={cambiandoPaleta}
+                      title={p.nombre}
+                      sx={{
+                        width: 28,
+                        height: 28,
+                        minWidth: 0,
+                        p: 0,
+                        borderRadius: "50%",
+                        cursor: cambiandoPaleta ? "default" : "pointer",
+                        bgcolor: p.accent,
+                        border: paletaActual === clave ? "2px solid #000" : "2px solid transparent",
+                        boxShadow: `0 0 0 1px ${p.bg}`,
+                      }}
+                    />
+                  ))}
+                </Stack>
+              </>
+            )}
           </Box>
         </Popover>
 
@@ -127,6 +178,7 @@ export default function HeaderBar({ esMovil, onMenuClick, negocioId }) {
           </MenuItem>
         </Menu>
         <Snackbar open={copiado} autoHideDuration={2000} onClose={() => setCopiado(false)} message="Link copiado" />
+        <Snackbar open={paletaCambiada} autoHideDuration={2000} onClose={() => setPaletaCambiada(false)} message="Paleta actualizada" />
       </Toolbar>
     </AppBar>
   );

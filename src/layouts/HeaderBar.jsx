@@ -21,6 +21,7 @@ export default function HeaderBar({ esMovil, onMenuClick, negocioId }) {
   const [pantallaAnchor, setPantallaAnchor] = useState(null);
   const [copiado, setCopiado] = useState(false);
   const [paletaCambiada, setPaletaCambiada] = useState(false);
+  const [paletaError, setPaletaError] = useState(false);
   const [cambiandoPaleta, setCambiandoPaleta] = useState(false);
   const urlPantalla = `${window.location.origin}/pantalla/${negocioId}`;
   const negocioActual = negocios.find((n) => n.id === Number(negocioId));
@@ -38,6 +39,8 @@ export default function HeaderBar({ esMovil, onMenuClick, negocioId }) {
       await negociosApi.actualizar(negocioId, { paletaPantalla: clave });
       await refetchNegocios();
       setPaletaCambiada(true);
+    } catch {
+      setPaletaError(true);
     } finally {
       setCambiandoPaleta(false);
     }
@@ -111,6 +114,8 @@ export default function HeaderBar({ esMovil, onMenuClick, negocioId }) {
                       onClick={() => cambiarPaleta(clave)}
                       disabled={cambiandoPaleta}
                       title={p.nombre}
+                      aria-label={`Paleta ${p.nombre}`}
+                      aria-pressed={paletaActual === clave}
                       sx={{
                         width: 28,
                         height: 28,
@@ -120,7 +125,7 @@ export default function HeaderBar({ esMovil, onMenuClick, negocioId }) {
                         cursor: cambiandoPaleta ? "default" : "pointer",
                         bgcolor: p.accent,
                         border: paletaActual === clave ? "2px solid #000" : "2px solid transparent",
-                        boxShadow: `0 0 0 1px ${p.bg}`,
+                        boxShadow: (t) => `0 0 0 1px ${alpha(t.palette.common.black, 0.18)}`,
                       }}
                     />
                   ))}
@@ -179,6 +184,7 @@ export default function HeaderBar({ esMovil, onMenuClick, negocioId }) {
         </Menu>
         <Snackbar open={copiado} autoHideDuration={2000} onClose={() => setCopiado(false)} message="Link copiado" />
         <Snackbar open={paletaCambiada} autoHideDuration={2000} onClose={() => setPaletaCambiada(false)} message="Paleta actualizada" />
+        <Snackbar open={paletaError} autoHideDuration={3000} onClose={() => setPaletaError(false)} message="No se pudo actualizar la paleta" />
       </Toolbar>
     </AppBar>
   );

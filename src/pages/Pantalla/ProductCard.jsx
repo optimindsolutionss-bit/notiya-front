@@ -1,6 +1,9 @@
+// Frontend/src/pages/Pantalla/ProductCard.jsx
+import { useContext } from "react";
 import { Box, Typography } from "@mui/material";
 import RestaurantRoundedIcon from "@mui/icons-material/RestaurantRounded";
-import { pantalla, fontDisplay, fontMono } from "./pantallaTokens";
+import { fontDisplay, fontMono } from "./pantallaTokens";
+import { PaletaContext } from "./PaletaContext";
 import { formatPrecio } from "../../utils/currency";
 
 const TAMANOS = {
@@ -11,6 +14,7 @@ const TAMANOS = {
 
 export default function ProductCard({ producto, profundidad = "media" }) {
   const { width, shadow } = TAMANOS[profundidad];
+  const paleta = useContext(PaletaContext);
 
   return (
     <Box
@@ -18,15 +22,15 @@ export default function ProductCard({ producto, profundidad = "media" }) {
         width,
         borderRadius: 4,
         overflow: "hidden",
-        bgcolor: pantalla.surface,
-        border: `1px solid ${pantalla.border}`,
+        bgcolor: paleta.surface,
+        border: `1px solid ${paleta.border}`,
         boxShadow: shadow,
       }}
     >
       <Box
         sx={{
           aspectRatio: "1",
-          bgcolor: pantalla.surfaceMuted,
+          bgcolor: paleta.surfaceMuted,
           backgroundImage: producto.imagenUrl ? `url(${producto.imagenUrl})` : undefined,
           backgroundSize: "cover",
           backgroundPosition: "center",
@@ -35,14 +39,14 @@ export default function ProductCard({ producto, profundidad = "media" }) {
           justifyContent: "center",
         }}
       >
-        {!producto.imagenUrl && <RestaurantRoundedIcon sx={{ fontSize: 56, color: pantalla.textMuted }} />}
+        {!producto.imagenUrl && <RestaurantRoundedIcon sx={{ fontSize: 56, color: paleta.textMuted }} />}
       </Box>
       <Box sx={{ p: 2.5 }}>
         <Typography
           sx={{
             fontFamily: fontDisplay,
             fontWeight: 700,
-            color: pantalla.text,
+            color: paleta.text,
             fontSize: "1.35rem",
             letterSpacing: "-0.01em",
           }}
@@ -50,7 +54,7 @@ export default function ProductCard({ producto, profundidad = "media" }) {
         >
           {producto.nombre}
         </Typography>
-        <Typography sx={{ fontFamily: fontMono, color: pantalla.accent, fontWeight: 700, fontSize: "1.6rem", mt: 0.5 }}>
+        <Typography sx={{ fontFamily: fontMono, color: paleta.accent, fontWeight: 700, fontSize: "1.6rem", mt: 0.5 }}>
           {formatPrecio(producto.precio)}
         </Typography>
       </Box>

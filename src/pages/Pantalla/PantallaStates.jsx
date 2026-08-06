@@ -1,9 +1,13 @@
+// Frontend/src/pages/Pantalla/PantallaStates.jsx
+import { useContext } from "react";
 import { Box, Typography } from "@mui/material";
 import { motion } from "framer-motion";
-import { pantalla, fontDisplay } from "./pantallaTokens";
+import { fontDisplay } from "./pantallaTokens";
+import { PALETAS, PALETA_DEFAULT } from "./paletas";
+import { PaletaContext } from "./PaletaContext";
 import heroImg from "../../assets/hero.png";
 
-function Frame({ children, fullPage = true }) {
+function Frame({ children, fullPage = true, paleta }) {
   return (
     <Box
       sx={{
@@ -13,8 +17,8 @@ function Frame({ children, fullPage = true }) {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        bgcolor: pantalla.bg,
-        color: pantalla.text,
+        bgcolor: paleta.bg,
+        color: paleta.text,
         textAlign: "center",
         px: 3,
         py: 6,
@@ -27,8 +31,9 @@ function Frame({ children, fullPage = true }) {
 }
 
 export function PantallaCargando() {
+  const paleta = PALETAS[PALETA_DEFAULT];
   return (
-    <Frame>
+    <Frame paleta={paleta}>
       <Box
         component={motion.div}
         animate={{ opacity: [0.4, 1, 0.4] }}
@@ -37,7 +42,7 @@ export function PantallaCargando() {
           width: 56,
           height: 56,
           borderRadius: "16px",
-          background: `linear-gradient(135deg, ${pantalla.accent}, ${pantalla.accentMuted})`,
+          background: `linear-gradient(135deg, ${paleta.accent}, ${paleta.accentMuted})`,
         }}
       />
     </Frame>
@@ -45,13 +50,14 @@ export function PantallaCargando() {
 }
 
 export function PantallaVacia({ nombreNegocio }) {
+  const paleta = useContext(PaletaContext);
   return (
-    <Frame fullPage={false}>
+    <Frame fullPage={false} paleta={paleta}>
       <Box component="img" src={heroImg} alt="" sx={{ width: 180, opacity: 0.85, mb: 3 }} />
       <Typography variant="h4" sx={{ fontWeight: 800 }}>
         {nombreNegocio || "Este negocio"} todavía no tiene productos para mostrar
       </Typography>
-      <Typography sx={{ color: pantalla.textMuted, mt: 1 }}>
+      <Typography sx={{ color: paleta.textMuted, mt: 1 }}>
         Cuando se agreguen productos disponibles, aparecerán aquí automáticamente.
       </Typography>
     </Frame>
@@ -59,12 +65,13 @@ export function PantallaVacia({ nombreNegocio }) {
 }
 
 export function PantallaError() {
+  const paleta = PALETAS[PALETA_DEFAULT];
   return (
-    <Frame>
+    <Frame paleta={paleta}>
       <Typography variant="h4" sx={{ fontWeight: 800 }}>
         No encontramos este negocio
       </Typography>
-      <Typography sx={{ color: pantalla.textMuted, mt: 1 }}>
+      <Typography sx={{ color: paleta.textMuted, mt: 1 }}>
         Verifica el enlace o contacta al negocio para obtener el correcto.
       </Typography>
     </Frame>

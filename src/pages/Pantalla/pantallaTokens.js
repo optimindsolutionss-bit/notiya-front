@@ -1,18 +1,8 @@
+// Frontend/src/pages/Pantalla/pantallaTokens.js
 /**
- * Sistema visual propio de la Pantalla pública — deliberadamente distinto
- * del indigo del panel admin (paleta "Digital Signage / Kiosk" vía skill
- * ui-ux-pro-max: alto contraste, fondo casi negro + acento rojo).
+ * Tipografía de la Pantalla pública. El color ahora viene de la paleta
+ * elegida por el negocio (ver paletas.js / PaletaContext) — no varía por
+ * paleta, así que sigue siendo una constante global acá.
  */
-export const pantalla = {
-  bg: "#020617",
-  surface: "#0E1223",
-  surfaceMuted: "#1A1E2F",
-  border: "#334155",
-  text: "#F8FAFC",
-  textMuted: "#94A3B8",
-  accent: "#EF4444",
-  accentMuted: "#7F1D1D",
-};
-
 export const fontDisplay = '"Inter", "Segoe UI", sans-serif';
 export const fontMono = '"JetBrains Mono", ui-monospace, monospace';

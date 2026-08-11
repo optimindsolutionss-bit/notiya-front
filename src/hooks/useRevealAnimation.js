@@ -3,16 +3,14 @@ import { animate } from "animejs";
 
 // Entrada suave (fade + translateY) con anime.js para el panel admin.
 // La Pantalla pública sigue con framer-motion (decisión previa, loop de horas en kiosco).
-//
-// Ref de callback (no useEffect con deps []): el nodo puede montarse recién
-// después de un estado de loading (ej. spinner -> grid), y un efecto con deps
-// vacías solo corre una vez tras el primer render, cuando el ref todavía es
-// null. Con ref de callback la animación dispara siempre que el nodo real
-// aparece en el DOM, sea en el primer render o en uno posterior.
 export function useRevealAnimation({ translateY = 12, duration = 450, delay = 0 } = {}) {
   return useCallback((node) => {
     if (!node) return undefined;
-    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return undefined;
+
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+      node.style.opacity = "1";
+      return undefined;
+    }
 
     const animation = animate(node, {
       opacity: [0, 1],
@@ -31,7 +29,13 @@ export function useRevealAnimation({ translateY = 12, duration = 450, delay = 0 
 export function useStaggerReveal({ translateY = 10, duration = 400, staggerDelay = 60 } = {}) {
   return useCallback((node) => {
     if (!node) return undefined;
-    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return undefined;
+
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+      Array.from(node.children).forEach((child) => {
+        child.style.opacity = "1";
+      });
+      return undefined;
+    }
 
     const animation = animate(node.children, {
       opacity: [0, 1],

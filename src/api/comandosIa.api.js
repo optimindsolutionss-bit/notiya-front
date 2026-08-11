@@ -16,6 +16,7 @@ export async function crear(negocioId, { textoOriginal }) {
     mensaje: data.mensaje,
     comando: normalizeComando(data.comando),
     borrador: data.borrador ? snakeToCamelShallow(data.borrador) : null,
+    requiereConfirmacion: data.requiere_confirmacion || false,
   };
 }
 

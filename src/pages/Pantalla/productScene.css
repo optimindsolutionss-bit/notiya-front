@@ -31,3 +31,35 @@
     animation: none;
   }
 }
+
+@keyframes notiya-tilt-ambient {
+  0% {
+    transform: rotateX(0deg) rotateY(0deg);
+  }
+  50% {
+    transform: rotateX(calc(var(--tilt-amp) * 0.6)) rotateY(var(--tilt-amp));
+  }
+  100% {
+    transform: rotateX(0deg) rotateY(0deg);
+  }
+}
+
+.notiya-tilt-ambient {
+  animation-name: notiya-tilt-ambient;
+  animation-duration: 8s;
+  animation-delay: var(--tilt-delay, 0s);
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .notiya-tilt-ambient {
+    animation: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notiya-tilt-ambient {
+    animation: none;
+  }
+}

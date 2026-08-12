@@ -71,7 +71,7 @@ function FormularioNegocio({ onCreado }) {
 }
 
 export default function NegociosSelector() {
-  const { logout } = useAuth();
+  const { logout, esSuperAdmin } = useAuth();
   const { negocios, loading } = useNegocio();
   const [dialogAbierto, setDialogAbierto] = useState(false);
   const navigate = useNavigate();
@@ -92,7 +92,14 @@ export default function NegociosSelector() {
     return (
       <Box sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
         <Container maxWidth="sm" sx={{ py: 6 }}>
-          <Stack direction="row" justifyContent="flex-end">
+          <Stack direction="row" justifyContent="space-between" alignItems="center">
+            {esSuperAdmin ? (
+              <Button size="small" onClick={() => navigate("/admin/negocios")}>
+                ← Ir al panel de administración
+              </Button>
+            ) : (
+              <span />
+            )}
             <IconButton onClick={logout} title="Cerrar sesión">
               <LogoutRoundedIcon />
             </IconButton>
@@ -126,9 +133,16 @@ export default function NegociosSelector() {
               Selecciona un negocio para gestionarlo
             </Typography>
           </Box>
-          <IconButton onClick={logout} title="Cerrar sesión">
-            <LogoutRoundedIcon />
-          </IconButton>
+          <Stack direction="row" spacing={1} alignItems="center">
+            {esSuperAdmin && (
+              <Button size="small" onClick={() => navigate("/admin/negocios")}>
+                ← Panel de administración
+              </Button>
+            )}
+            <IconButton onClick={logout} title="Cerrar sesión">
+              <LogoutRoundedIcon />
+            </IconButton>
+          </Stack>
         </Stack>
 
         <Box

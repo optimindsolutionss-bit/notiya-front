@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Box } from "@mui/material";
 import { useTilt3D } from "./useTilt3D";
+import "./productScene.css";
 
 function seedFrom(n) {
   const x = Number(n) || 0;
@@ -12,7 +13,7 @@ export default function ImagenTilt3D({ imagenUrl, size, seed, fallback, bgColor 
   const s = seedFrom(seed);
 
   return (
-    <Box sx={{ width: size, aspectRatio: "1", perspective: 800 }}>
+    <Box sx={{ width: size, aspectRatio: "1", perspective: typeof size === "number" ? size * 2 : 800 }}>
       <Box
         ref={ref}
         component={motion.div}

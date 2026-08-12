@@ -52,10 +52,12 @@
   animation-iteration-count: infinite;
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .notiya-tilt-ambient {
-    animation: none;
-  }
+/* En kiosco/TV nadie toca el mouse: la deriva ambiental es la única animación
+   3D visible, así que corre siempre. En equipos con mouse se pausa solo
+   mientras el puntero está encima (ver ImagenTilt3D), para no pelear con el
+   tilt interactivo. */
+.notiya-tilt-ambient.notiya-tilt-hover {
+  animation-play-state: paused;
 }
 
 @media (prefers-reduced-motion: reduce) {

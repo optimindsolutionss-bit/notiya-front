@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Box } from "@mui/material";
 import { useTilt3D } from "./useTilt3D";
@@ -10,6 +11,7 @@ function seedFrom(n) {
 
 export default function ImagenTilt3D({ imagenUrl, size, seed, fallback, bgColor }) {
   const { ref, style, handlers } = useTilt3D();
+  const [hover, setHover] = useState(false);
   const s = seedFrom(seed);
 
   return (
@@ -18,8 +20,13 @@ export default function ImagenTilt3D({ imagenUrl, size, seed, fallback, bgColor 
         ref={ref}
         component={motion.div}
         style={style}
-        {...handlers}
-        className="notiya-tilt-ambient"
+        onMouseMove={handlers.onMouseMove}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={(e) => {
+          setHover(false);
+          handlers.onMouseLeave(e);
+        }}
+        className={`notiya-tilt-ambient${hover ? " notiya-tilt-hover" : ""}`}
         sx={{
           width: "100%",
           height: "100%",

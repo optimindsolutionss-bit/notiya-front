@@ -5,6 +5,7 @@ import RestaurantRoundedIcon from "@mui/icons-material/RestaurantRounded";
 import { fontDisplay, fontMono } from "./pantallaTokens";
 import { PaletaContext } from "./PaletaContext";
 import { formatPrecio } from "../../utils/currency";
+import ImagenTilt3D from "./ImagenTilt3D";
 
 const TAMANOS = {
   cerca: { width: 380, shadow: "0 30px 60px -15px rgba(239,68,68,0.35)" },
@@ -27,20 +28,13 @@ export default function ProductCard({ producto, profundidad = "media" }) {
         boxShadow: shadow,
       }}
     >
-      <Box
-        sx={{
-          aspectRatio: "1",
-          bgcolor: paleta.surfaceMuted,
-          backgroundImage: producto.imagenUrl ? `url(${producto.imagenUrl})` : undefined,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        {!producto.imagenUrl && <RestaurantRoundedIcon sx={{ fontSize: 56, color: paleta.textMuted }} />}
-      </Box>
+      <ImagenTilt3D
+        imagenUrl={producto.imagenUrl}
+        size={width}
+        seed={producto.id}
+        bgColor={paleta.surfaceMuted}
+        fallback={<RestaurantRoundedIcon sx={{ fontSize: 56, color: paleta.textMuted }} />}
+      />
       <Box sx={{ p: 2.5 }}>
         <Typography
           sx={{

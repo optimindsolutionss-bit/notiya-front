@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Box } from "@mui/material";
-import { motion, AnimatePresence, useReducedMotion, useMotionValue, useSpring } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import ProductCard from "./ProductCard";
 import "./productScene.css";
 
@@ -60,32 +60,10 @@ function useCarrusel(productos) {
 }
 
 function EscenaAnimada({ productos }) {
-  const containerRef = useRef(null);
-  const rawX = useMotionValue(0);
-  const rawY = useMotionValue(0);
-  // Parallax decorativo: se interpola con spring en vez de seguir el mouse
-  // 1:1, que se sentiría artificial (ver guía de Emil Kowalski sobre mouse-tracking).
-  const parallaxX = useSpring(rawX, { stiffness: 60, damping: 14 });
-  const parallaxY = useSpring(rawY, { stiffness: 60, damping: 14 });
   const visibles = useCarrusel(productos);
-
-  const handleMouseMove = (e) => {
-    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    const nx = (e.clientX - rect.left) / rect.width - 0.5;
-    const ny = (e.clientY - rect.top) / rect.height - 0.5;
-    rawX.set(nx * -16);
-    rawY.set(ny * -12);
-  };
 
   return (
     <Box
-      ref={containerRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={() => {
-        rawX.set(0);
-        rawY.set(0);
-      }}
       sx={{
         perspective: "1400px",
         px: { xs: 2, md: 5 },
@@ -98,7 +76,6 @@ function EscenaAnimada({ productos }) {
     >
       <Box
         component={motion.div}
-        style={{ x: parallaxX, y: parallaxY }}
         sx={{ display: "flex", flexWrap: "wrap", justifyContent: "center", alignItems: "center", gap: 5 }}
       >
         <AnimatePresence mode="popLayout">

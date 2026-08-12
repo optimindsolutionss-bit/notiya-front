@@ -30,6 +30,11 @@ function RedirigirSegunSesion() {
   return <Navigate to={isAuthenticated ? "/app" : "/login"} replace />;
 }
 
+function RedirigirApp() {
+  const { esSuperAdmin } = useAuth();
+  return <Navigate to={esSuperAdmin ? "/admin/negocios" : "/app/negocios"} replace />;
+}
+
 export default function AppRouter() {
   return (
     <Routes>
@@ -54,7 +59,7 @@ export default function AppRouter() {
       <Route path="/suscribirse/:negocioId" element={<SuscripcionPublica />} />
 
       <Route element={<RequireAuth />}>
-        <Route path="/app" element={<Navigate to="/app/negocios" replace />} />
+        <Route path="/app" element={<RedirigirApp />} />
         <Route path="/app/negocios" element={<NegociosSelector />} />
 
         <Route path="/app/:negocioId" element={<RequireNegocio />}>

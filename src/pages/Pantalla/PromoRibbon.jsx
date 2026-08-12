@@ -6,6 +6,7 @@ import LocalFireDepartmentRoundedIcon from "@mui/icons-material/LocalFireDepartm
 import { fontDisplay, fontMono } from "./pantallaTokens";
 import { PaletaContext } from "./PaletaContext";
 import { formatPrecio } from "../../utils/currency";
+import ImagenTilt3D from "./ImagenTilt3D";
 
 function TarjetaPromo({ promo, productos, destacar, paleta }) {
   const producto = productos.find((p) => p.id === promo.productoId);
@@ -32,7 +33,17 @@ function TarjetaPromo({ promo, productos, destacar, paleta }) {
         minWidth: 260,
       }}
     >
-      <LocalFireDepartmentRoundedIcon sx={{ color: paleta.accent }} />
+      {producto?.imagenUrl ? (
+        <ImagenTilt3D
+          imagenUrl={producto.imagenUrl}
+          size={56}
+          seed={promo.id}
+          bgColor={paleta.surfaceMuted}
+          fallback={null}
+        />
+      ) : (
+        <LocalFireDepartmentRoundedIcon sx={{ color: paleta.accent }} />
+      )}
       <Box sx={{ minWidth: 0 }}>
         <Typography sx={{ color: paleta.text, fontWeight: 700, fontSize: "0.95rem" }} noWrap>
           {promo.titulo}

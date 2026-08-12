@@ -137,7 +137,7 @@ export default function ProductoFormDialog({ open, onClose, negocioId, categoria
             <Stack direction="row" spacing={2} alignItems="center">
               <input
                 type="file"
-                accept="image/*"
+                accept="image/jpeg,image/png,image/webp"
                 capture="environment"
                 hidden
                 ref={fileInputRef}
@@ -175,7 +175,7 @@ export default function ProductoFormDialog({ open, onClose, negocioId, categoria
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 3 }}>
           <Button onClick={onClose}>Cancelar</Button>
-          <Button type="submit" variant="contained" disabled={guardando} sx={{ px: 3 }}>
+          <Button type="submit" variant="contained" disabled={guardando || subiendo} sx={{ px: 3 }}>
             {guardando ? <CircularProgress size={20} sx={{ color: "#fff" }} /> : "Guardar"}
           </Button>
         </DialogActions>

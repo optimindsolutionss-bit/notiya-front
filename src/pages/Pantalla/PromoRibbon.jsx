@@ -10,6 +10,7 @@ import ImagenTilt3D from "./ImagenTilt3D";
 
 function TarjetaPromo({ promo, productos, destacar, paleta }) {
   const producto = productos.find((p) => p.id === promo.productoId);
+  const imagen = promo.imagenUrl || producto?.imagenUrl;
 
   return (
     <Box
@@ -33,9 +34,9 @@ function TarjetaPromo({ promo, productos, destacar, paleta }) {
         minWidth: 260,
       }}
     >
-      {producto?.imagenUrl ? (
+      {imagen ? (
         <ImagenTilt3D
-          imagenUrl={producto.imagenUrl}
+          imagenUrl={imagen}
           size={56}
           seed={promo.id}
           bgColor={paleta.surfaceMuted}

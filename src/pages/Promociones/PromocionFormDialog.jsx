@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -11,8 +11,13 @@ import {
   Alert,
   CircularProgress,
   InputAdornment,
+  Avatar,
+  Typography,
 } from "@mui/material";
+import ImageRoundedIcon from "@mui/icons-material/ImageRounded";
+import BrokenImageRoundedIcon from "@mui/icons-material/BrokenImageRounded";
 import * as promocionesApi from "../../api/promociones.api";
+import { useImagePreview } from "../../utils/useImagePreview";
 
 function aInputLocal(iso) {
   if (!iso) return "";
@@ -21,12 +26,16 @@ function aInputLocal(iso) {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
-const VACIO = { productoId: "", titulo: "", descripcion: "", precioPromocional: "", fechaInicio: "", fechaFin: "" };
+const VACIO = { productoId: "", titulo: "", descripcion: "", precioPromocional: "", fechaInicio: "", fechaFin: "", imagenUrl: "" };
 
 export default function PromocionFormDialog({ open, onClose, negocioId, productos, promocion, onSaved }) {
   const [values, setValues] = useState(VACIO);
   const [error, setError] = useState("");
   const [guardando, setGuardando] = useState(false);
+  const [subiendo, setSubiendo] = useState(false);
+  const [errorImagen, setErrorImagen] = useState("");
+  const fileInputRef = useRef(null);
+  const previewStatus = useImagePreview(values.imagenUrl);
 
   useEffect(() => {
     if (open) {
@@ -39,14 +48,32 @@ export default function PromocionFormDialog({ open, onClose, negocioId, producto
               precioPromocional: promocion.precioPromocional != null ? String(promocion.precioPromocional) : "",
               fechaInicio: aInputLocal(promocion.fechaInicio),
               fechaFin: aInputLocal(promocion.fechaFin),
+              imagenUrl: promocion.imagenUrl || "",
             }
           : VACIO
       );
       setError("");
+      setErrorImagen("");
     }
   }, [open, promocion]);
 
   const set = (campo) => (e) => setValues((v) => ({ ...v, [campo]: e.target.value }));
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    e.target.value = "";
+    if (!file) return;
+    setErrorImagen("");
+    setSubiendo(true);
+    try {
+      const url = await promocionesApi.subirImagen(negocioId, file);
+      setValues((v) => ({ ...v, imagenUrl: url }));
+    } catch (err) {
+      setErrorImagen(err.response?.data?.mensaje || "No se pudo subir la imagen, intenta de nuevo");
+    } finally {
+      setSubiendo(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -60,6 +87,7 @@ export default function PromocionFormDialog({ open, onClose, negocioId, producto
         precioPromocional: values.precioPromocional ? Number(values.precioPromocional) : null,
         fechaInicio: new Date(values.fechaInicio).toISOString(),
         fechaFin: new Date(values.fechaFin).toISOString(),
+        imagenUrl: values.imagenUrl || null,
       };
       if (promocion) {
         await promocionesApi.actualizar(negocioId, promocion.id, payload);
@@ -132,11 +160,45 @@ export default function PromocionFormDialog({ open, onClose, negocioId, producto
                 onChange={set("fechaFin")}
               />
             </Stack>
+
+            <Stack direction="row" spacing={2} alignItems="center">
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                capture="environment"
+                hidden
+                ref={fileInputRef}
+                onChange={handleFileChange}
+              />
+              <Stack spacing={0.5} sx={{ flex: 1 }}>
+                <Button variant="outlined" disabled={subiendo} onClick={() => fileInputRef.current.click()}>
+                  {subiendo ? "Subiendo..." : values.imagenUrl ? "Cambiar imagen" : "Tomar/subir imagen"}
+                </Button>
+                {errorImagen && (
+                  <Typography variant="caption" color="error">
+                    {errorImagen}
+                  </Typography>
+                )}
+              </Stack>
+              <Avatar
+                variant="rounded"
+                src={!subiendo && previewStatus === "ok" ? values.imagenUrl : undefined}
+                sx={{ width: 56, height: 56, bgcolor: "background.neutral" }}
+              >
+                {subiendo || previewStatus === "loading" ? (
+                  <CircularProgress size={20} />
+                ) : previewStatus === "error" ? (
+                  <BrokenImageRoundedIcon color="disabled" />
+                ) : (
+                  <ImageRoundedIcon color="disabled" />
+                )}
+              </Avatar>
+            </Stack>
           </Stack>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 3 }}>
           <Button onClick={onClose}>Cancelar</Button>
-          <Button type="submit" variant="contained" disabled={guardando} sx={{ px: 3 }}>
+          <Button type="submit" variant="contained" disabled={guardando || subiendo} sx={{ px: 3 }}>
             {guardando ? <CircularProgress size={20} sx={{ color: "#fff" }} /> : "Guardar"}
           </Button>
         </DialogActions>

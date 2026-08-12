@@ -13,15 +13,12 @@ import {
   Stack,
   CircularProgress,
   InputAdornment,
-  IconButton,
 } from "@mui/material";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
-import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import * as adminApi from "../../api/admin.api";
 import * as negociosApi from "../../api/negocios.api";
 import AdminCrearNegocioDialog from "./AdminCrearNegocioDialog";
-import { useAuth } from "../../context/AuthContext";
 import PageHeader from "../../components/layout/PageHeader";
 import EmptyState from "../../components/layout/EmptyState";
 import { useStaggerReveal } from "../../hooks/useRevealAnimation";
@@ -34,7 +31,6 @@ export default function AdminNegociosPage() {
   const [dialogAbierto, setDialogAbierto] = useState(false);
   const listRef = useStaggerReveal({ translateY: 10, duration: 350, staggerDelay: 50 });
   const navigate = useNavigate();
-  const { logout } = useAuth();
 
   const cargar = useCallback(async () => {
     const lista = await adminApi.listarTodosNegocios();
@@ -67,14 +63,9 @@ export default function AdminNegociosPage() {
         title="Todos los negocios"
         subtitle={`${negocios.length} negocio${negocios.length !== 1 ? "s" : ""} en la plataforma`}
         action={
-          <Stack direction="row" spacing={1} alignItems="center">
-            <Button variant="contained" startIcon={<AddRoundedIcon />} onClick={() => setDialogAbierto(true)}>
-              Crear negocio
-            </Button>
-            <IconButton onClick={logout} title="Cerrar sesión">
-              <LogoutRoundedIcon />
-            </IconButton>
-          </Stack>
+          <Button variant="contained" startIcon={<AddRoundedIcon />} onClick={() => setDialogAbierto(true)}>
+            Crear negocio
+          </Button>
         }
       />
 

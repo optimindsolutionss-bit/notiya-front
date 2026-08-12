@@ -5,6 +5,7 @@ import RequireNegocio from "./guards/RequireNegocio";
 import RequireSuperAdmin from "./guards/RequireSuperAdmin";
 import RequireRolNegocio from "./guards/RequireRolNegocio";
 import DashboardLayout from "../layouts/DashboardLayout";
+import AdminLayout from "../layouts/AdminLayout";
 import Login from "../pages/Login";
 import Registro from "../pages/Registro";
 import NegociosSelector from "../pages/Negocios/NegociosSelector";
@@ -80,8 +81,10 @@ export default function AppRouter() {
         </Route>
 
         <Route element={<RequireSuperAdmin />}>
-          <Route path="/admin/negocios" element={<AdminNegociosPage />} />
-          <Route path="/admin/usuarios" element={<AdminUsuariosPage />} />
+          <Route element={<AdminLayout />}>
+            <Route path="/admin/negocios" element={<AdminNegociosPage />} />
+            <Route path="/admin/usuarios" element={<AdminUsuariosPage />} />
+          </Route>
         </Route>
       </Route>
 

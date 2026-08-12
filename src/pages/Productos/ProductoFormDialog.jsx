@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -12,6 +12,7 @@ import {
   CircularProgress,
   InputAdornment,
   Avatar,
+  Typography,
 } from "@mui/material";
 import ImageRoundedIcon from "@mui/icons-material/ImageRounded";
 import BrokenImageRoundedIcon from "@mui/icons-material/BrokenImageRounded";
@@ -24,6 +25,9 @@ export default function ProductoFormDialog({ open, onClose, negocioId, categoria
   const [values, setValues] = useState(VACIO);
   const [error, setError] = useState("");
   const [guardando, setGuardando] = useState(false);
+  const [subiendo, setSubiendo] = useState(false);
+  const [errorImagen, setErrorImagen] = useState("");
+  const fileInputRef = useRef(null);
   const previewStatus = useImagePreview(values.imagenUrl);
 
   useEffect(() => {
@@ -40,10 +44,27 @@ export default function ProductoFormDialog({ open, onClose, negocioId, categoria
           : VACIO
       );
       setError("");
+      setErrorImagen("");
     }
   }, [open, producto]);
 
   const set = (campo) => (e) => setValues((v) => ({ ...v, [campo]: e.target.value }));
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    e.target.value = "";
+    if (!file) return;
+    setErrorImagen("");
+    setSubiendo(true);
+    try {
+      const url = await productosApi.subirImagen(negocioId, file);
+      setValues((v) => ({ ...v, imagenUrl: url }));
+    } catch (err) {
+      setErrorImagen(err.response?.data?.mensaje || "No se pudo subir la imagen, intenta de nuevo");
+    } finally {
+      setSubiendo(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -114,19 +135,34 @@ export default function ProductoFormDialog({ open, onClose, negocioId, categoria
             </Stack>
 
             <Stack direction="row" spacing={2} alignItems="center">
-              <TextField
-                label="URL de la imagen"
-                fullWidth
-                value={values.imagenUrl}
-                onChange={set("imagenUrl")}
-                helperText={previewStatus === "error" ? "No se pudo cargar esa imagen, pero puedes guardar igual" : " "}
+              <input
+                type="file"
+                accept="image/*"
+                capture="environment"
+                hidden
+                ref={fileInputRef}
+                onChange={handleFileChange}
               />
+              <Stack spacing={0.5} sx={{ flex: 1 }}>
+                <Button
+                  variant="outlined"
+                  disabled={subiendo}
+                  onClick={() => fileInputRef.current.click()}
+                >
+                  {subiendo ? "Subiendo..." : values.imagenUrl ? "Cambiar foto" : "Tomar/subir foto"}
+                </Button>
+                {errorImagen && (
+                  <Typography variant="caption" color="error">
+                    {errorImagen}
+                  </Typography>
+                )}
+              </Stack>
               <Avatar
                 variant="rounded"
-                src={previewStatus === "ok" ? values.imagenUrl : undefined}
+                src={!subiendo && previewStatus === "ok" ? values.imagenUrl : undefined}
                 sx={{ width: 56, height: 56, bgcolor: "background.neutral" }}
               >
-                {previewStatus === "loading" ? (
+                {subiendo || previewStatus === "loading" ? (
                   <CircularProgress size={20} />
                 ) : previewStatus === "error" ? (
                   <BrokenImageRoundedIcon color="disabled" />

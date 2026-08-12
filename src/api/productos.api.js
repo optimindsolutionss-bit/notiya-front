@@ -42,3 +42,10 @@ export async function actualizarDisponibilidad(negocioId, productoId, disponible
 export async function eliminar(negocioId, productoId) {
   await api.delete(`/negocios/${negocioId}/productos/${productoId}`);
 }
+
+export async function subirImagen(negocioId, file) {
+  const form = new FormData();
+  form.append("imagen", file);
+  const { data } = await api.post(`/negocios/${negocioId}/productos/imagen`, form);
+  return data.url;
+}

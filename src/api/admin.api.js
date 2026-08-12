@@ -29,6 +29,10 @@ export async function crearNegocioParaUsuario({ usuarioId, nombre, tipoNegocio, 
   return snakeToCamelShallow(data.negocio);
 }
 
+export async function eliminarNegocio(negocioId) {
+  await api.delete(`/admin/negocios/${negocioId}`);
+}
+
 export async function buscarUsuarioPorCorreo(correo) {
   const { data } = await api.get("/admin/usuarios", { params: { correo } });
   return data.usuarios;

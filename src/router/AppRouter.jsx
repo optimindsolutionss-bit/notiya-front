@@ -20,6 +20,7 @@ import SuscripcionPublica from "../pages/Clientes/SuscripcionPublica";
 import MensajesPage from "../pages/Mensajes/MensajesPage";
 import ComandosIaPage from "../pages/ComandosIa/ComandosIaPage";
 import EquipoPage from "../pages/Equipo/EquipoPage";
+import AjustesPage from "../pages/Negocios/AjustesPage";
 
 function RutaPublicaSoloInvitado({ children }) {
   const { isAuthenticated } = useAuth();
@@ -76,6 +77,7 @@ export default function AppRouter() {
             </Route>
             <Route element={<RequireRolNegocio roles={["dueño"]} />}>
               <Route path="equipo" element={<EquipoPage />} />
+              <Route path="ajustes" element={<AjustesPage />} />
             </Route>
           </Route>
         </Route>

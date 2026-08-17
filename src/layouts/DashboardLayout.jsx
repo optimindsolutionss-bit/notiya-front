@@ -15,6 +15,7 @@ import IconClientes from "~icons/solar/users-group-rounded-linear";
 import IconMensajes from "~icons/solar/chat-round-dots-linear";
 import IconComandos from "~icons/solar/magic-stick-3-linear";
 import IconEquipo from "~icons/solar/users-group-two-rounded-linear";
+import IconAjustes from "~icons/solar/settings-linear";
 import IconAdmin from "~icons/solar/shield-check-linear";
 import IconUsuarios from "~icons/solar/user-id-linear";
 import IconLogout from "~icons/solar/logout-3-linear";
@@ -33,6 +34,7 @@ const ICONS = {
   mensajes: IconMensajes,
   comandos: IconComandos,
   equipo: IconEquipo,
+  ajustes: IconAjustes,
   admin: IconAdmin,
   usuarios: IconUsuarios,
   logout: IconLogout,
@@ -80,6 +82,7 @@ export default function DashboardLayout() {
       { label: "Mensajes", to: `/app/${id}/mensajes`, icon: ICONS.mensajes, roles: ["dueño", "editor"] },
       { label: "Comandos IA", to: `/app/${id}/comandos`, icon: ICONS.comandos, roles: ["dueño", "editor"] },
       { label: "Equipo", to: `/app/${id}/equipo`, icon: ICONS.equipo, roles: ["dueño"] },
+      { label: "Ajustes", to: `/app/${id}/ajustes`, icon: ICONS.ajustes, roles: ["dueño"] },
     ];
     return todos.filter((item) => !rol || item.roles.includes(rol));
   }, [id, rol]);

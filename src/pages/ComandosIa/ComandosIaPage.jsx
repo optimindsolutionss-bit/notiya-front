@@ -418,7 +418,7 @@ export default function ComandosIaPage() {
         </Stack>
         {codigoVinculo && (
           <Alert severity="info" sx={{ mt: 2 }}>
-            Envía el código <strong>{codigoVinculo.codigo}</strong> por WhatsApp al número del negocio para
+            Envía el código <strong>{codigoVinculo.codigo}</strong> por WhatsApp al número de WhatsApp de NotiYa para
             activarlo. Vence en 10 minutos.
           </Alert>
         )}

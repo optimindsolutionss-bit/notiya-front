@@ -28,6 +28,7 @@ import ImageRoundedIcon from "@mui/icons-material/ImageRounded";
 import HelpOutlineRoundedIcon from "@mui/icons-material/HelpOutlineRounded";
 import { motion, useReducedMotion } from "framer-motion";
 import * as comandosIaApi from "../../api/comandosIa.api";
+import * as whatsappVinculoApi from "../../api/whatsappVinculo.api";
 import PageHeader from "../../components/layout/PageHeader";
 import EmptyState from "../../components/layout/EmptyState";
 import IconMagic from "~icons/solar/magic-stick-3-linear";
@@ -311,6 +312,8 @@ export default function ComandosIaPage() {
   const [procesandoId, setProcesandoId] = useState(null);
   const [error, setError] = useState("");
   const [toast, setToast] = useState(null);
+  const [vinculando, setVinculando] = useState(false);
+  const [codigoVinculo, setCodigoVinculo] = useState(null);
 
   const cargar = useCallback(async () => {
     setComandos(await comandosIaApi.listar(id));
@@ -374,6 +377,18 @@ export default function ComandosIaPage() {
     }
   };
 
+  const generarCodigoVinculo = async () => {
+    setVinculando(true);
+    try {
+      const resultado = await whatsappVinculoApi.generarCodigo(id);
+      setCodigoVinculo(resultado);
+    } catch {
+      setToast({ tipo: "error", texto: "No se pudo generar el código" });
+    } finally {
+      setVinculando(false);
+    }
+  };
+
   if (loading) {
     return (
       <Box sx={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -388,6 +403,26 @@ export default function ComandosIaPage() {
         title="Comandos con IA"
         subtitle="Habla o escribe lo que quieras hacer con tu catálogo, como si le hablaras a un empleado."
       />
+
+      <Card sx={{ p: { xs: 2, sm: 2.5 }, mb: 3 }}>
+        <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5} alignItems={{ sm: "center" }} justifyContent="space-between">
+          <Box>
+            <Typography variant="subtitle2">Usar comandos desde WhatsApp</Typography>
+            <Typography variant="body2" sx={{ color: "text.secondary" }}>
+              Vincula tu número para enviar estos mismos comandos por WhatsApp.
+            </Typography>
+          </Box>
+          <Button variant="outlined" onClick={generarCodigoVinculo} disabled={vinculando} sx={{ flexShrink: 0 }}>
+            {vinculando ? <CircularProgress size={20} /> : "Vincular WhatsApp"}
+          </Button>
+        </Stack>
+        {codigoVinculo && (
+          <Alert severity="info" sx={{ mt: 2 }}>
+            Envía el código <strong>{codigoVinculo.codigo}</strong> por WhatsApp al número del negocio para
+            activarlo. Vence en 10 minutos.
+          </Alert>
+        )}
+      </Card>
 
       <Card sx={{ p: { xs: 2, sm: 2.5 }, mb: 3, position: "sticky", top: 8, zIndex: 1, overflow: "visible" }}>
         <form onSubmit={handleSubmit}>

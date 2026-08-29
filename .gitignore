@@ -25,13 +25,29 @@ dist-ssr
 *.sln
 *.sw?
 
-# Claude Code local config / skills (not shared to remote)
-.claude
+# Claude Code local config / skills (not shared to remote), salvo el arnes
+# portable del loop verify-and-heal (necesario en la superficie cloud/Routine)
+.claude/*
+!.claude/agents/
+!.claude/skills/
+.claude/agents/*
+!.claude/agents/healer.md
+.claude/skills/*
+!.claude/skills/verify-and-heal/
 .agents
 skills-lock.json
 
+# Artefactos generados por el verificador local (Playwright)
+test-results
+playwright-report
+blob-report
+e2e/screenshots
+
 # Git worktrees (local scratch, not shared)
 .worktrees
+
+# Superpowers scratch (SDD workspaces, brainstorm mockups — local only)
+.superpowers
 
 # Planes/specs internos (solo local, no se comparten)
 docs

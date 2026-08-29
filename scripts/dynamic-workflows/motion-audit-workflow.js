@@ -72,7 +72,7 @@ function scout() {
 // Junta el contexto de decisiones previas (specs ya escritas) relevantes al
 // area auditada, para que el reporte final enlace la razon de cada patron.
 function bootstrap() {
-  let specFiles;
+  let specFiles = [];
   try {
     specFiles = readdirSync(SPECS_DIR).filter((f) => /pantalla|tilt|animada/i.test(f));
   } catch {
@@ -112,7 +112,7 @@ function evaluate(facts) {
   });
 
   let lintPass = true;
-  let lintOutput;
+  let lintOutput = "";
   try {
     lintOutput = execSync(`npx eslint "${relative(ROOT, TARGET_DIR)}"`, {
       cwd: ROOT,
